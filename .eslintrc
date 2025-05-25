@@ -8,6 +8,8 @@
       "error",
       { "allowAfterThis": true }
     ],
+    "no-constant-condition": "off",
+    "no-continue": "off",
     "class-methods-use-this": "off"
   },
   "env": {

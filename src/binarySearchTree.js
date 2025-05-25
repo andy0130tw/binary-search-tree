@@ -80,7 +80,8 @@ class BinarySearchTree {
 
       if (compare === 0) {
         return true;
-      } else if (compare < 0) {
+      }
+      if (compare < 0) {
         current = current.getLeft();
       } else {
         current = current.getRight();
@@ -117,7 +118,8 @@ class BinarySearchTree {
       if (compare === 0) {
         // Found the value
         return current;
-      } else if (compare < 0) {
+      }
+      if (compare < 0) {
         // Traverse the left subtree
         current = current.getLeft();
       } else {
@@ -327,22 +329,21 @@ class BinarySearchTree {
    */
   remove(value) {
     let current = this._root;
-  
+
     while (current !== null) {
       const compare = this._compare(value, current.getValue());
-  
+
       if (compare === 0) {
         this.removeNode(current);
         return true;
+      }
+      if (compare < 0) {
+        current = current.getLeft();
       } else {
-        if (compare < 0) {
-          current = current.getLeft();
-        } else {
-          current = current.getRight();
-        }
+        current = current.getRight();
       }
     }
-  
+
     return false;
   }
 
@@ -447,20 +448,20 @@ class BinarySearchTree {
     if (typeof cb !== 'function') {
       throw new Error('.traversePreOrder expects a callback function');
     }
-  
+
     // Initialize stack with the root node
     const stack = [this._root];
-  
+
     while (stack.length) {
       const current = stack.pop();
-      
+
       // Check for abort condition
       if (abortCb && abortCb()) break;
       if (!current) continue;
-      
+
       // Process the current node
       cb(current);
-      
+
       // Push right and then left child to stack
       stack.push(current.getRight());
       stack.push(current.getLeft());
@@ -477,26 +478,26 @@ class BinarySearchTree {
     if (typeof cb !== 'function') {
       throw new Error('.traversePostOrder expects a callback function');
     }
-  
+
     const s1 = [];
     const s2 = [];
     s1.push(this._root);
-  
+
     while (s1.length) {
       const current = s1.pop();
-      
+
       // Push to the second stack
       s2.push(current);
-  
+
       // Check for abort condition
       if (abortCb && abortCb()) break;
       if (!current) continue;
-      
+
       // Push left and then right child to first stack
       s1.push(current.getLeft());
       s1.push(current.getRight());
     }
-  
+
     // Process all nodes from second stack
     while (s2.length) {
       const current = s2.pop();
