@@ -76,36 +76,49 @@ class AvlTree extends BinarySearchTree {
    */
   insert(value) {
     const newNode = new AvlTreeNode(value, this._compare);
-    const insertRecursive = (current) => {
-      const compare = this._compare(value, current.getValue());
-      if (compare < 0) {
-        if (current.hasLeft()) {
-          insertRecursive(current.getLeft());
-          this._balanceNode(current); // backward-tracking
-        } else {
-          newNode.setParent(current);
-          current.setLeft(newNode).updateHeight();
-          this._count += 1;
-        }
-      } else if (compare > 0) {
-        if (current.hasRight()) {
-          insertRecursive(current.getRight());
-          this._balanceNode(current); // backward-tracking
-        } else {
-          newNode.setParent(current);
-          current.setRight(newNode).updateHeight();
-          this._count += 1;
-        }
-      } else {
-        current.setValue(value);
-      }
-    };
-
     if (this._root === null) {
       this._root = newNode;
       this._count += 1;
     } else {
-      insertRecursive(this._root);
+      let current = this._root;
+      let inserted = false;
+      /** @type {AvlTreeNode<any>[]} */
+      const visited = [];
+      while (true) {
+        const compare = this._compare(value, current.getValue());
+        if (compare === 0) {
+          current.setValue(value);
+          break;
+        }
+
+        visited.push(current);
+        if (compare < 0) {
+          if (current.hasLeft()) {
+            current = current.getLeft();
+          } else {
+            current.setLeft(newNode.setParent(current)).updateHeight();
+            this._count += 1;
+            inserted = true;
+            break;
+          }
+        } else {
+          // for symmetry
+          // eslint-disable-next-line no-lonely-if
+          if (current.hasRight()) {
+            current = current.getRight();
+          } else {
+            current.setRight(newNode.setParent(current)).updateHeight();
+            this._count += 1;
+            inserted = true;
+            break;
+          }
+        }
+      }
+      if (inserted) {
+        for (let i = visited.length - 1; i >= 0; i -= 1) {
+          this._balanceNode(visited[i]);
+        }
+      }
     }
 
     return this;
@@ -120,29 +133,32 @@ class AvlTree extends BinarySearchTree {
    * @return {boolean}
    */
   remove(value) {
-    const removeRecursively = (val, current) => {
-      if (current === null) {
-        return false;
+    let current = this._root;
+    let found = false;
+    /** @type {AvlTreeNode<any>[]} */
+    const visited = [];
+    while (current !== null) {
+      const compare = this._compare(value, current.getValue());
+      if (compare === 0) {
+        found = true;
+        this.removeNode(current);
+        break;
       }
-
-      const compare = this._compare(val, current.getValue());
+      visited.push(current);
       if (compare < 0) {
-        const removed = removeRecursively(val, current.getLeft());
-        this._balanceNode(current);
-        return removed;
+        current = current.getLeft();
+      } else {
+        current = current.getRight();
       }
+    }
 
-      if (compare > 0) {
-        const removed = removeRecursively(val, current.getRight());
-        this._balanceNode(current);
-        return removed;
+    if (found) {
+      // rebalance
+      for (let i = visited.length - 1; i >= 0; i -= 1) {
+        this._balanceNode(visited[i]);
       }
-
-      // current node is the node to remove
-      return this.removeNode(current);
-    };
-
-    return removeRecursively(value, this._root);
+    }
+    return found;
   }
 
   /**

@@ -5,6 +5,21 @@ describe('AvlTree tests', () => {
   const avlTree = new AvlTree();
 
   describe('.insert(value)', () => {
+    it('should insert nodes to the tree', () => {
+      const t = new AvlTree();
+      expect(t.insert(50)).to.be.instanceof(AvlTree);
+      expect(t.insert(80)).to.be.instanceof(AvlTree);
+      expect(t.insert(30)).to.be.instanceof(AvlTree);
+      expect(t.insert(90)).to.be.instanceof(AvlTree);
+      expect(t.insert(60)).to.be.instanceof(AvlTree);
+      expect(t.insert(40)).to.be.instanceof(AvlTree);
+      expect(t.insert(20)).to.be.instanceof(AvlTree);
+
+      // updates value of existing node
+      expect(t.insert(20)).to.be.instanceof(AvlTree);
+      expect(t.find(20).getValue()).to.equal(20);
+    });
+
     it('left rotation balancing', () => {
       avlTree.insert(50);
       avlTree.insert(80);
@@ -480,6 +495,9 @@ describe('AvlTree tests', () => {
     });
 
     it('removes the rest of nodes properly', () => {
+      // removing a non-existent node
+      expect(avlTree.remove(67)).to.equal(false);
+
       /*
                   40
                /      \
@@ -643,5 +661,9 @@ describe('AvlTree tests', () => {
     expect(testRemoveTree.root().getRight().getValue()).to.equal(90);
     expect(testRemoveTree.root().getRight().getLeft().getValue()).to.equal(60);
     expect(testRemoveTree.root().getRight().getRight()).to.equal(null);
+
+    // should not remove anything
+    expect(testRemoveTree.removeNode(20)).to.equal(false);
+    expect(testRemoveTree.find(20).getValue()).to.equal(20);
   });
 });

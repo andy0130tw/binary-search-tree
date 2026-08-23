@@ -34,13 +34,18 @@ class BinarySearchTree {
    */
   insert(value) {
     const newNode = new BinarySearchTreeNode(value);
-    let current = this._root;
-    if (!current) {
+    if (this._root === null) {
       this._root = newNode;
       this._count += 1;
     } else {
+      let current = this._root;
       while (true) {
-        const compare = this._compare(newNode.getValue(), current.getValue());
+        const compare = this._compare(value, current.getValue());
+
+        if (compare === 0) {
+          current.setValue(value);
+          break;
+        }
 
         if (compare < 0) {
           if (current.hasLeft()) {
@@ -58,9 +63,6 @@ class BinarySearchTree {
             this._count += 1;
             break;
           }
-        } else {
-          current.setValue(value);
-          break;
         }
       }
     }
